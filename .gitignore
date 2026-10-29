@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Rust build artifacts
+target/
+src-tauri/target/
+
+# Production builds
+dist/
+dist-ssr/
+*.local
+
+# Tauri
+src-tauri/gen/
+
+# Editor & OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Superpowers scratchpad & logs
+.superpowers/
+*.log
