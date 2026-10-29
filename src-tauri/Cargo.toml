@@ -1,0 +1,27 @@
+[package]
+name = "gitshow"
+version = "0.1.0"
+description = "High-performance desktop Git & GitHub client"
+authors = ["Long Vu"]
+edition = "2021"
+
+[lib]
+name = "gitshow_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+git2 = "0.19"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+thiserror = "1"
+keyring = "2"
+portable-pty = "0.8"
+notify = "6"
+reqwest = { version = "0.12", features = ["json"] }
