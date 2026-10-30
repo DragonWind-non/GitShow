@@ -95,6 +95,11 @@ export function DagCanvas() {
   // Re-render when commits, dimensions, selection, or theme change
   useEffect(() => {
     scheduleRender();
+    return () => {
+      if (animFrameRef.current !== null) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+    };
   }, [scheduleRender, dimensions]);
 
   // Close context menu on outside click or Escape
