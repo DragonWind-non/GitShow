@@ -5,6 +5,7 @@ import { DagCanvas } from '../graph/DagCanvas';
 import { StagingPanel } from '../staging/StagingPanel';
 import { DiffViewer } from '../diff/DiffViewer';
 import { CommandBridgeDrawer } from '../cli-bridge/CommandBridgeDrawer';
+import { UndoModal } from '../undo/UndoModal';
 import { useGitStore } from '../../store/gitStore';
 
 export interface AppLayoutProps {
@@ -25,9 +26,15 @@ export function AppLayout({
   const selectedFile = useGitStore((state) => state.selectedFile);
   const activeDiff = useGitStore((state) => state.activeDiff);
   const selectFile = useGitStore((state) => state.selectFile);
+  const activeView = useGitStore((state) => state.activeView);
+  const setActiveView = useGitStore((state) => state.setActiveView);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
+      <UndoModal
+        isOpen={activeView === 'undo'}
+        onClose={() => setActiveView('history')}
+      />
       <div className="flex-1 flex flex-row min-h-0 overflow-hidden">
         {/* Left Column: Sidebar */}
         <div data-testid="sidebar-column" className="shrink-0 h-full">

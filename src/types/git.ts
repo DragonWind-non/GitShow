@@ -42,3 +42,13 @@ export interface StashInfo {
   message: string;
   commit_id?: string;
 }
+
+export interface UndoSnapshot {
+  id: string;
+  timestamp: number;
+  action_name: string;
+  pre_head_sha: string;
+  dangling_stash_sha?: string | null;
+  restore_cli_command: string;
+}
+
