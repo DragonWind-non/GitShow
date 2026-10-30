@@ -4,6 +4,7 @@ import { TopBar } from './TopBar';
 import { DagCanvas } from '../graph/DagCanvas';
 import { StagingPanel } from '../staging/StagingPanel';
 import { DiffViewer } from '../diff/DiffViewer';
+import { CommandBridgeDrawer } from '../cli-bridge/CommandBridgeDrawer';
 import { useGitStore } from '../../store/gitStore';
 
 export interface AppLayoutProps {
@@ -21,7 +22,6 @@ export function AppLayout({
   bottom,
   children,
 }: AppLayoutProps) {
-  const isTerminalOpen = useGitStore((state) => state.isTerminalOpen);
   const selectedFile = useGitStore((state) => state.selectedFile);
   const activeDiff = useGitStore((state) => state.activeDiff);
   const selectFile = useGitStore((state) => state.selectFile);
@@ -71,17 +71,9 @@ export function AppLayout({
           {/* Bottom Drawer: CLI / Terminal */}
           <div
             data-testid="bottom-drawer"
-            className={`border-t border-slate-800 bg-slate-950 transition-all duration-150 overflow-hidden flex flex-col shrink-0 ${
-              isTerminalOpen ? 'h-60' : 'h-0 border-t-0'
-            }`}
+            className="shrink-0"
           >
-            <div className="h-full min-h-0 overflow-auto">
-              {bottom ?? (
-                <div className="h-full flex items-center justify-center text-slate-500 text-xs font-mono">
-                  CLI Bridge & Terminal Drawer (Task 15)
-                </div>
-              )}
-            </div>
+            {bottom ?? <CommandBridgeDrawer />}
           </div>
         </div>
       </div>
