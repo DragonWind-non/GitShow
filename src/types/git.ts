@@ -71,3 +71,10 @@ export interface PullRequestItem {
   review_decision?: string | null;
 }
 
+export interface CliExecutionResult {
+  stdout: string;
+  stderr: string;
+  exit_code: number;
+  preview_command: string;
+}
+
