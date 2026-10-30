@@ -46,17 +46,17 @@
   };
   ```
 
-- [ ] **Step 1: Write test for translations and store in `tests/i18n.test.ts`**
+- [x] **Step 1: Write test for translations and store in `tests/i18n.test.ts`**
   Asserts that `translations.en` and `translations.vi` have identical keys, `useTranslation().t` returns expected strings, and `setLanguage` updates store and `localStorage`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/i18n.test.ts` -> Expected: FAIL (files missing).
-- [ ] **Step 3: Implement `src/i18n/translations.ts` and `src/i18n/useTranslation.ts`**
+- [x] **Step 3: Implement `src/i18n/translations.ts` and `src/i18n/useTranslation.ts`**
   Define complete dictionary with keys covering TopBar, Sidebar, Banner, Staging, Diff, ContextMenu, Rebase, Undo, PR Studio, and CLI Bridge.
-- [ ] **Step 4: Update `src/store/gitStore.ts`**
+- [x] **Step 4: Update `src/store/gitStore.ts`**
   Add `language: Language` and `setLanguage` method to `GitStoreState`.
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
   Run: `pnpm test tests/i18n.test.ts` -> Expected: PASS.
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
   `git add src/ tests/ && git commit -m "feat(i18n): add type-safe translation dictionary and zustand language store"`
 
 ---
@@ -72,15 +72,15 @@
 - Consumes: `useTranslation()`
 - Produces: Segmented switch `[ 🇻🇳 VI | 🇬🇧 EN ]` with active pill highlight placed next to Sun/Moon button.
 
-- [ ] **Step 1: Write test for `LanguageToggle` in `tests/languageToggle.test.tsx`**
+- [x] **Step 1: Write test for `LanguageToggle` in `tests/languageToggle.test.tsx`**
   Verify clicking "VI" switches language to Vietnamese; clicking "EN" switches to English. Verify placement in `TopBar`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/languageToggle.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Implement `LanguageToggle.tsx` and integrate into `TopBar.tsx`**
+- [x] **Step 3: Implement `LanguageToggle.tsx` and integrate into `TopBar.tsx`**
   Render button next to theme toggle button. Translate tooltips (Fetch, Pull, Push, New Branch, Stash, Search placeholder).
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/languageToggle.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/ tests/ && git commit -m "feat(i18n): implement language switch toggle in topbar"`
 
 ---
@@ -96,15 +96,15 @@
 - Consumes: `useTranslation()`
 - Produces: Localized navigation items, branch/tag sections, repo status badges, and open repo banner.
 
-- [ ] **Step 1: Write test in `tests/sidebarI18n.test.tsx`**
+- [x] **Step 1: Write test in `tests/sidebarI18n.test.tsx`**
   Verify Sidebar navigation labels change dynamically when language is toggled.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/sidebarI18n.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Update `Sidebar.tsx` and `App.tsx` with translations**
+- [x] **Step 3: Update `Sidebar.tsx` and `App.tsx` with translations**
   Replace hardcoded text with `t(...)` calls. Retain exact `data-testid` values.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/sidebarI18n.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/ tests/ && git commit -m "feat(i18n): localize sidebar navigation and repository banner"`
 
 ---
@@ -120,15 +120,15 @@
 - Consumes: `useTranslation()`
 - Produces: Localized Staged/Unstaged headers, Stage All/Unstage All buttons, Commit Box placeholder, and Diff Viewer status.
 
-- [ ] **Step 1: Write test in `tests/stagingI18n.test.tsx`**
+- [x] **Step 1: Write test in `tests/stagingI18n.test.tsx`**
   Verify Staging and Diff texts react to language toggle.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/stagingI18n.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Update `StagingPanel.tsx` and `DiffViewer.tsx`**
+- [x] **Step 3: Update `StagingPanel.tsx` and `DiffViewer.tsx`**
   Integrate `useTranslation()`. Ensure commit conventional commit pills and diff line rendering remain untouched.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/stagingI18n.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/ tests/ && git commit -m "feat(i18n): localize staging panel, commit box, and diff viewer"`
 
 ---
@@ -149,15 +149,15 @@
 - Consumes: `useTranslation()`
 - Produces: 100% localized modals, interactive rebase drag guidance, Safe Undo reflog rollback actions, GitHub PR Studio review interface, and CLI Bridge tooltips.
 
-- [ ] **Step 1: Write bilingual end-to-end integration test in `tests/bilingual_e2e.test.tsx`**
+- [x] **Step 1: Write bilingual end-to-end integration test in `tests/bilingual_e2e.test.tsx`**
   Verify switching to Vietnamese changes all menus, modals, and drawers across the studio.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/bilingual_e2e.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Update DagCanvas, Undo, Rebase, PR Studio, and CLI Bridge components**
+- [x] **Step 3: Update DagCanvas, Undo, Rebase, PR Studio, and CLI Bridge components**
   Use `t(...)` for all user-facing strings while strictly preserving Git command lines and technical names.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/bilingual_e2e.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/ tests/ && git commit -m "feat(i18n): localize canvas context menu, rebase, safe undo, and pr studio"`
 
 ---
@@ -167,11 +167,11 @@
 **Files:**
 - Test: Full Vitest suite & Rust suite
 
-- [ ] **Step 1: Run all frontend tests**
+- [x] **Step 1: Run all frontend tests**
   Run: `pnpm test` -> Expected: 100% PASS with zero regressions across all suites.
-- [ ] **Step 2: Run all Rust backend tests**
+- [x] **Step 2: Run all Rust backend tests**
   Run: `cargo test --manifest-path src-tauri/Cargo.toml` -> Expected: 61/61 PASS.
-- [ ] **Step 3: Run packaging and bundle audit**
+- [x] **Step 3: Run packaging and bundle audit**
   Run: `pnpm audit:bundle` -> Expected: PASS (< 1.5MB gzip).
-- [ ] **Step 4: Final commit & status check**
+- [x] **Step 4: Final commit & status check**
   `git status` clean, all changes committed.
