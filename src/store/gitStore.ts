@@ -1,8 +1,24 @@
 import { create } from 'zustand';
 import type { BranchInfo, DagCommit, FileStatus, RepoInfo, StashInfo, TagInfo } from '../types/git';
+import type { Language } from '../i18n/translations';
 
 export type ActiveView = 'history' | 'rebase' | 'pull-requests' | 'undo';
 export type AppTheme = 'dark' | 'light';
+
+function getInitialLanguage(): Language {
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    try {
+      const saved = localStorage.getItem('gitshow_language');
+      if (saved === 'en' || saved === 'vi') return saved;
+      if (typeof navigator !== 'undefined' && navigator.language && navigator.language.startsWith('vi')) {
+        return 'vi';
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return 'en';
+}
 
 export interface GitStoreState {
   repoInfo: RepoInfo | null;
@@ -18,6 +34,7 @@ export interface GitStoreState {
   cliPreview: string;
   isTerminalOpen: boolean;
   theme: AppTheme;
+  language: Language;
   activeView: ActiveView;
 
   // Actions
@@ -34,6 +51,7 @@ export interface GitStoreState {
   toggleTerminal: () => void;
   setTerminalOpen: (open: boolean) => void;
   setTheme: (theme: AppTheme) => void;
+  setLanguage: (lang: Language) => void;
   setActiveView: (view: ActiveView) => void;
 }
 
@@ -51,6 +69,7 @@ export const useGitStore = create<GitStoreState>((set) => ({
   cliPreview: '',
   isTerminalOpen: false,
   theme: 'dark',
+  language: getInitialLanguage(),
   activeView: 'history',
 
   setRepoInfo: (info) => set({ repoInfo: info }),
@@ -74,6 +93,16 @@ export const useGitStore = create<GitStoreState>((set) => ({
       }
     }
     set({ theme });
+  },
+  setLanguage: (lang) => {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('gitshow_language', lang);
+      } catch {
+        // ignore
+      }
+    }
+    set({ language: lang });
   },
   setActiveView: (view) => set({ activeView: view }),
 }));
