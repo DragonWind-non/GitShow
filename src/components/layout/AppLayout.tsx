@@ -3,6 +3,7 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { DagCanvas } from '../graph/DagCanvas';
 import { StagingPanel } from '../staging/StagingPanel';
+import { DiffViewer } from '../diff/DiffViewer';
 import { useGitStore } from '../../store/gitStore';
 
 export interface AppLayoutProps {
@@ -21,6 +22,9 @@ export function AppLayout({
   children,
 }: AppLayoutProps) {
   const isTerminalOpen = useGitStore((state) => state.isTerminalOpen);
+  const selectedFile = useGitStore((state) => state.selectedFile);
+  const activeDiff = useGitStore((state) => state.activeDiff);
+  const selectFile = useGitStore((state) => state.selectFile);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
@@ -50,7 +54,17 @@ export function AppLayout({
               data-testid="right-column"
               className="w-80 shrink-0 h-full border-l border-slate-800 bg-slate-900/40 flex flex-col min-h-0 overflow-hidden"
             >
-              {right ?? <StagingPanel />}
+              {right ??
+                (selectedFile ? (
+                  <DiffViewer
+                    filePath={selectedFile.path}
+                    isStaged={selectedFile.staged}
+                    diff={activeDiff ?? undefined}
+                    onClose={() => selectFile(null)}
+                  />
+                ) : (
+                  <StagingPanel />
+                ))}
             </aside>
           </div>
 

@@ -78,6 +78,10 @@ export function StagingPanel({
 
   const stagedFiles = useGitStore((s) => s.stagedFiles);
   const unstagedFiles = useGitStore((s) => s.unstagedFiles);
+  const storeSelectedFile = useGitStore((s) => s.selectedFile);
+
+  const currentSelectedFile = selectedFile !== undefined ? selectedFile : storeSelectedFile;
+  const handleSelectFile = onSelectFile ?? ((file: FileStatus) => useGitStore.getState().selectFile(file));
 
   const [filterQuery, setFilterQuery] = useState('');
   const [commitMessage, setCommitMessage] = useState('');
@@ -251,8 +255,8 @@ export function StagingPanel({
                 <FileItem
                   key={file.path}
                   file={file}
-                  isSelected={selectedFile?.path === file.path}
-                  onSelect={onSelectFile}
+                  isSelected={currentSelectedFile?.path === file.path}
+                  onSelect={handleSelectFile}
                   onUnstage={handleUnstage}
                 />
               ))
@@ -291,8 +295,8 @@ export function StagingPanel({
                 <FileItem
                   key={file.path}
                   file={file}
-                  isSelected={selectedFile?.path === file.path}
-                  onSelect={onSelectFile}
+                  isSelected={currentSelectedFile?.path === file.path}
+                  onSelect={handleSelectFile}
                   onStage={handleStage}
                   onDiscard={handleDiscard}
                 />

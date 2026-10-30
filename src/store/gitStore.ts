@@ -11,6 +11,8 @@ export interface GitStoreState {
   stashes: StashInfo[];
   commits: DagCommit[];
   selectedCommit: DagCommit | null;
+  selectedFile: FileStatus | null;
+  activeDiff: string | null;
   stagedFiles: FileStatus[];
   unstagedFiles: FileStatus[];
   cliPreview: string;
@@ -25,6 +27,8 @@ export interface GitStoreState {
   setStashes: (stashes: StashInfo[]) => void;
   setCommits: (commits: DagCommit[]) => void;
   selectCommit: (commit: DagCommit | null) => void;
+  selectFile: (file: FileStatus | null) => void;
+  setActiveDiff: (diff: string | null) => void;
   setFiles: (staged: FileStatus[], unstaged: FileStatus[]) => void;
   setCliPreview: (cmd: string) => void;
   toggleTerminal: () => void;
@@ -40,6 +44,8 @@ export const useGitStore = create<GitStoreState>((set) => ({
   stashes: [],
   commits: [],
   selectedCommit: null,
+  selectedFile: null,
+  activeDiff: null,
   stagedFiles: [],
   unstagedFiles: [],
   cliPreview: '',
@@ -53,6 +59,8 @@ export const useGitStore = create<GitStoreState>((set) => ({
   setStashes: (stashes) => set({ stashes }),
   setCommits: (commits) => set({ commits }),
   selectCommit: (commit) => set({ selectedCommit: commit }),
+  selectFile: (file) => set({ selectedFile: file }),
+  setActiveDiff: (diff) => set({ activeDiff: diff }),
   setFiles: (staged, unstaged) => set({ stagedFiles: staged, unstagedFiles: unstaged }),
   setCliPreview: (cmd) => set({ cliPreview: cmd }),
   toggleTerminal: () => set((state) => ({ isTerminalOpen: !state.isTerminalOpen })),
