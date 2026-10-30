@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GitCommit, GitMerge, GitPullRequest, ArrowRight, CornerDownRight } from 'lucide-react';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 import type { DagCommit } from '../../types/git';
 import {
   ROW_HEIGHT,
@@ -21,6 +22,7 @@ export function DagCanvas() {
   const theme = useGitStore((state) => state.theme);
   const selectCommit = useGitStore((state) => state.selectCommit);
   const setCliPreview = useGitStore((state) => state.setCliPreview);
+  const { t } = useTranslation();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -227,7 +229,7 @@ export function DagCanvas() {
           className="h-full flex flex-col items-center justify-center text-slate-500 text-sm gap-2"
         >
           <GitCommit className="w-8 h-8 opacity-40 animate-pulse" />
-          <p>No commits found in current branch</p>
+          <p>{t('dagEmpty')}</p>
         </div>
       ) : (
         <>
@@ -259,7 +261,7 @@ export function DagCanvas() {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="px-3 py-1.5 border-b border-slate-800 text-[11px] font-mono text-slate-400">
-            Commit {contextMenu.commit.short_id || contextMenu.commit.id.slice(0, 7)}
+            {t('menuCommitPrefix')} {contextMenu.commit.short_id || contextMenu.commit.id.slice(0, 7)}
           </div>
 
           <button
@@ -272,7 +274,7 @@ export function DagCanvas() {
             className="w-full text-left px-3 py-1.5 hover:bg-blue-600/20 hover:text-blue-400 flex items-center gap-2"
           >
             <ArrowRight className="w-3.5 h-3.5" />
-            <span>Checkout this commit</span>
+            <span>{t('menuCheckout')}</span>
           </button>
 
           <button
@@ -285,7 +287,7 @@ export function DagCanvas() {
             className="w-full text-left px-3 py-1.5 hover:bg-emerald-600/20 hover:text-emerald-400 flex items-center gap-2"
           >
             <GitMerge className="w-3.5 h-3.5" />
-            <span>Merge into current HEAD</span>
+            <span>{t('menuMerge')}</span>
           </button>
 
           <button
@@ -298,7 +300,7 @@ export function DagCanvas() {
             className="w-full text-left px-3 py-1.5 hover:bg-purple-600/20 hover:text-purple-400 flex items-center gap-2"
           >
             <CornerDownRight className="w-3.5 h-3.5" />
-            <span>Rebase current branch onto this</span>
+            <span>{t('menuRebase')}</span>
           </button>
 
           <button
@@ -311,7 +313,7 @@ export function DagCanvas() {
             className="w-full text-left px-3 py-1.5 hover:bg-amber-600/20 hover:text-amber-400 flex items-center gap-2"
           >
             <GitPullRequest className="w-3.5 h-3.5" />
-            <span>Cherry-pick commit</span>
+            <span>{t('menuCherryPick')}</span>
           </button>
         </div>
       )}

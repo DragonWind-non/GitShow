@@ -14,6 +14,7 @@ import {
 import { invoke } from '@tauri-apps/api/core';
 import type { UndoSnapshot } from '../../types/git';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export interface UndoModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export function UndoModal({
 
   const repoInfo = useGitStore((state) => state.repoInfo);
   const setCliPreview = useGitStore((state) => state.setCliPreview);
+  const { t } = useTranslation();
 
   const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
   const snapshots = controlledSnapshots ?? internalSnapshots;
@@ -140,10 +142,10 @@ export function UndoModal({
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-                Safe Undo & Reflog Time Machine
+                {t('undoModalTitle')}
               </h2>
               <p className="text-xs text-slate-400">
-                1-Click Rollback previous repository mutations with dangling stash recovery.
+                {t('undoModalDesc')}
               </p>
             </div>
           </div>
@@ -172,7 +174,7 @@ export function UndoModal({
               <div className="p-3 rounded-full bg-slate-800/60 text-slate-400 mb-3">
                 <ShieldCheck className="w-8 h-8 text-emerald-400" />
               </div>
-              <h3 className="text-sm font-medium text-slate-200">No undo snapshots available</h3>
+              <h3 className="text-sm font-medium text-slate-200">{t('undoEmpty')}</h3>
               <p className="mt-1 text-xs text-slate-400 max-w-sm">
                 Destructive actions such as resets, rebases, and branch deletions will automatically
                 record recovery snapshots here.
@@ -228,12 +230,12 @@ export function UndoModal({
                           {isRolling ? (
                             <>
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              <span>Rolling back...</span>
+                              <span>{t('undoRollingBack')}</span>
                             </>
                           ) : (
                             <>
                               <RotateCcw className="w-3.5 h-3.5" />
-                              <span>Rollback</span>
+                              <span>{t('undoRollbackBtn')}</span>
                             </>
                           )}
                         </button>

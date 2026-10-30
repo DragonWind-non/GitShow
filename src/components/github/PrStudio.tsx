@@ -16,6 +16,7 @@ import type { PullRequestItem } from '../../types/git';
 import { ForkSyncButton } from './ForkSyncButton';
 import { PrDetailView } from './PrDetailView';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export interface PrStudioProps {
   initialPrs?: PullRequestItem[];
@@ -42,6 +43,7 @@ export function PrStudio({
   const [error, setError] = useState<string | null>(null);
 
   const repoInfo = useGitStore((s) => s.repoInfo);
+  const { t } = useTranslation();
   const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
   // Resolve owner & repo from props or detect from git remote origin
@@ -203,7 +205,7 @@ export function PrStudio({
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Open
+              {t('prStateOpen')}
             </button>
             <button
               type="button"
@@ -215,7 +217,7 @@ export function PrStudio({
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Merged
+              {t('prStateMerged')}
             </button>
             <button
               type="button"
@@ -227,7 +229,7 @@ export function PrStudio({
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Closed
+              {t('prStateClosed')}
             </button>
           </div>
         </div>
@@ -279,7 +281,7 @@ export function PrStudio({
           <div className="flex-1 overflow-y-auto divide-y divide-slate-800/60">
             {filteredPrs.length === 0 ? (
               <div className="p-6 text-center text-slate-500 text-xs">
-                No pull requests found
+                {t('prNoReviews')}
               </div>
             ) : (
               filteredPrs.map((pr) => {

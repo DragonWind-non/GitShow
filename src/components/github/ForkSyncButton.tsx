@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GitFork, Loader2, Check, AlertCircle } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export interface ForkSyncButtonProps {
   upstreamBranch?: string; // defaults to "main"
@@ -16,6 +17,7 @@ export function ForkSyncButton({
 }: ForkSyncButtonProps) {
   const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleSync = async () => {
     if (syncState === 'syncing') return;
@@ -82,12 +84,12 @@ export function ForkSyncButton({
 
         <span>
           {syncState === 'syncing'
-            ? 'Syncing...'
+            ? t('prSyncing')
             : syncState === 'success'
             ? 'Synced!'
             : syncState === 'error'
             ? 'Sync Failed'
-            : 'Sync Fork'}
+            : t('prSyncFork')}
         </span>
       </button>
 

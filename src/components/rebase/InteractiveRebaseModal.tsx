@@ -12,6 +12,7 @@ import { invoke } from '@tauri-apps/api/core';
 import type { RebaseAction, RebaseItem } from '../../types/git';
 import { RebaseItemRow } from './RebaseItemRow';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export interface InteractiveRebaseModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export function InteractiveRebaseModal({
   const repoInfo = useGitStore((state) => state.repoInfo);
   const commits = useGitStore((state) => state.commits);
   const setCliPreview = useGitStore((state) => state.setCliPreview);
+  const { t } = useTranslation();
 
   const [items, setItems] = useState<RebaseItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -191,7 +193,7 @@ export function InteractiveRebaseModal({
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-                Interactive Rebase
+                {t('rebaseTitle')}
                 {targetBranch && (
                   <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
                     onto {targetBranch}
@@ -285,7 +287,7 @@ export function InteractiveRebaseModal({
             disabled={isSubmitting}
             className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
           >
-            Cancel
+            {t('rebaseCancelBtn')}
           </button>
           <button
             type="button"
@@ -297,12 +299,12 @@ export function InteractiveRebaseModal({
             {isSubmitting ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Rebasing...</span>
+                <span>{t('rebaseExecuting')}</span>
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Start Rebase</span>
+                <span>{t('rebaseStartBtn')}</span>
               </>
             )}
           </button>

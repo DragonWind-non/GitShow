@@ -8,6 +8,7 @@ import {
   Loader2,
   X,
 } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export interface SimulationPromptProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export function SimulationPrompt({
   onCancel,
   isSimulating = false,
 }: SimulationPromptProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -72,7 +74,7 @@ export function SimulationPrompt({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-amber-300">
-                Simulation Preview — Destructive Action
+                {t('undoWarningTitle')}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">{actionName}</p>
             </div>
@@ -163,7 +165,7 @@ export function SimulationPrompt({
             disabled={isSimulating}
             className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 transition-colors disabled:opacity-50"
           >
-            Cancel
+            {t('undoWarningCancel')}
           </button>
           <button
             type="button"
@@ -178,7 +180,7 @@ export function SimulationPrompt({
                 <span>Simulating...</span>
               </>
             ) : (
-              <span>Proceed with {actionName}</span>
+              <span>{t('undoWarningConfirm')}</span>
             )}
           </button>
         </div>

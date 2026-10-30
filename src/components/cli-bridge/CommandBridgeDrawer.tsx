@@ -10,6 +10,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 import { EmbeddedTerminal } from './EmbeddedTerminal';
 
 export interface CommandBridgeDrawerProps {
@@ -139,6 +140,7 @@ export function CommandBridgeDrawer({ className = '' }: CommandBridgeDrawerProps
   const cliPreview = useGitStore((state) => state.cliPreview);
   const isTerminalOpen = useGitStore((state) => state.isTerminalOpen);
   const toggleTerminal = useGitStore((state) => state.toggleTerminal);
+  const { t } = useTranslation();
 
   const [copied, setCopied] = useState(false);
   const [isExplainOpen, setIsExplainOpen] = useState(false);
@@ -212,12 +214,12 @@ export function CommandBridgeDrawer({ className = '' }: CommandBridgeDrawerProps
             {copied ? (
               <>
                 <Check className="w-3 h-3 text-emerald-400" />
-                <span className="text-[11px] text-emerald-400 font-sans">Copied!</span>
+                <span className="text-[11px] text-emerald-400 font-sans">{t('cliCopied')}</span>
               </>
             ) : (
               <>
                 <Copy className="w-3 h-3" />
-                <span className="text-[11px] font-sans">Copy</span>
+                <span className="text-[11px] font-sans">{t('cliCopyBtn')}</span>
               </>
             )}
           </button>
@@ -234,7 +236,7 @@ export function CommandBridgeDrawer({ className = '' }: CommandBridgeDrawerProps
             }`}
           >
             <HelpCircle className="w-3 h-3 text-blue-400" />
-            <span className="text-[11px] font-sans">Explain</span>
+            <span className="text-[11px] font-sans">{t('cliExplainFlags')}</span>
           </button>
 
           <button

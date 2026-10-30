@@ -80,7 +80,7 @@ export const translations = {
     undoRollbackBtn: 'Rollback',
     undoRollingBack: 'Rolling back...',
     undoEmpty: 'No undo snapshots available for this repository',
-    undoWarningTitle: 'Simulation Warning',
+    undoWarningTitle: 'Simulation Preview — Destructive Action',
     undoWarningConfirm: 'Proceed with mutation',
     undoWarningCancel: 'Cancel operation',
 
@@ -88,7 +88,7 @@ export const translations = {
     rebaseTitle: 'Interactive Rebase Studio',
     rebaseDesc: 'Drag to reorder commits, choose actions, or squash without Vim prompts',
     rebaseStartBtn: 'Start Rebase',
-    rebaseExecuting: 'Executing Rebase...',
+    rebaseExecuting: 'Rebasing...',
     rebaseCancelBtn: 'Cancel',
 
     // GitHub PR Studio
