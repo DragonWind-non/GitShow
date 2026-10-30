@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Minus, Search, X, GitCommit, Check } from 'lucide-react';
 import { FileItem } from './FileItem';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 import type { FileStatus } from '../../types/git';
 
 export interface StagingPanelProps {
@@ -86,6 +87,7 @@ export function StagingPanel({
   const [filterQuery, setFilterQuery] = useState('');
   const [commitMessage, setCommitMessage] = useState('');
   const [isAmend, setIsAmend] = useState(false);
+  const { t } = useTranslation();
 
   const filteredStaged = stagedFiles.filter((f) =>
     f.path.toLowerCase().includes(filterQuery.toLowerCase())
@@ -228,7 +230,7 @@ export function StagingPanel({
         <div>
           <div className="flex items-center justify-between py-1 px-1 text-xs font-semibold text-slate-300">
             <span className="flex items-center gap-1.5">
-              <span>Staged Changes</span>
+              <span>{t('stagingStaged')}</span>
               <span className="px-1.5 py-0.2 text-[10px] font-mono rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 {stagedFiles.length}
               </span>
@@ -241,7 +243,7 @@ export function StagingPanel({
               className="flex items-center gap-1 text-[11px] font-normal text-slate-400 hover:text-amber-300 disabled:opacity-40 disabled:hover:text-slate-400 transition-colors"
             >
               <Minus className="w-3 h-3" />
-              Unstage All
+              {t('stagingUnstageAll')}
             </button>
           </div>
 
@@ -268,7 +270,7 @@ export function StagingPanel({
         <div>
           <div className="flex items-center justify-between py-1 px-1 text-xs font-semibold text-slate-300">
             <span className="flex items-center gap-1.5">
-              <span>Changes</span>
+              <span>{t('stagingUnstaged')}</span>
               <span className="px-1.5 py-0.2 text-[10px] font-mono rounded-full bg-slate-800 text-slate-300 border border-slate-700">
                 {unstagedFiles.length}
               </span>
@@ -281,7 +283,7 @@ export function StagingPanel({
               className="flex items-center gap-1 text-[11px] font-normal text-slate-400 hover:text-emerald-300 disabled:opacity-40 disabled:hover:text-slate-400 transition-colors"
             >
               <Plus className="w-3 h-3" />
-              Stage All
+              {t('stagingStageAll')}
             </button>
           </div>
 
@@ -326,7 +328,7 @@ export function StagingPanel({
         {/* Commit Message Textarea */}
         <textarea
           rows={3}
-          placeholder="Commit message (summary and optional description)..."
+          placeholder={t('stagingCommitPlaceholder')}
           value={commitMessage}
           onChange={handleCommitMessageChange}
           onKeyDown={handleKeyDown}
@@ -342,7 +344,7 @@ export function StagingPanel({
               onChange={handleToggleAmend}
               className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-900 text-blue-500 focus:ring-0 focus:ring-offset-0 cursor-pointer"
             />
-            <span>Amend previous commit</span>
+            <span>{t('stagingAmend')}</span>
           </label>
 
           <button
@@ -354,7 +356,7 @@ export function StagingPanel({
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-40 disabled:hover:bg-blue-600 transition-colors"
           >
             <Check className="w-3.5 h-3.5" />
-            <span>Commit</span>
+            <span>{t('stagingCommitBtn')}</span>
           </button>
         </div>
       </div>

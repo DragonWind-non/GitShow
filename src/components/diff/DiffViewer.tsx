@@ -20,6 +20,7 @@ import {
   type DiffLine,
 } from './diffParser';
 import { useGitStore } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 let shikiInstance: HighlighterCore | null = null;
 let shikiPromise: Promise<HighlighterCore | null> | null = null;
@@ -211,6 +212,7 @@ export function DiffViewer({
   const theme = useGitStore((s) => s.theme);
   const [, setShikiLoaded] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let active = true;
@@ -234,8 +236,7 @@ export function DiffViewer({
 
   const filePath =
     propFilePath ||
-    (parsedFile ? (parsedFile.newPath !== '/dev/null' ? parsedFile.newPath : parsedFile.oldPath) : '') ||
-    'Diff';
+    (parsedFile ? (parsedFile.newPath !== '/dev/null' ? parsedFile.newPath : parsedFile.oldPath) : '');
 
   const lang = useMemo(() => getLanguageFromPath(filePath), [filePath]);
 
@@ -364,9 +365,9 @@ export function DiffViewer({
         ) : null}
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <FileCode className="w-10 h-10 text-slate-600 mb-2" />
-          <p className="text-sm font-medium text-slate-300">No changes detected</p>
+          <p className="text-sm font-medium text-slate-300">{t('diffNoChanges')}</p>
           <p className="text-xs text-slate-500 mt-1">
-            {filePath ? `No diff available for ${filePath}` : 'Select a modified file to view diff'}
+            {filePath ? `${t('diffNoChanges')}: ${filePath}` : t('diffSelectFile')}
           </p>
           {onClose && !filePath && (
             <button
@@ -397,7 +398,7 @@ export function DiffViewer({
             className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-sans font-medium rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors"
           >
             <Plus className="w-3 h-3" />
-            Stage Hunk
+            <span>{t('diffStageHunk')}</span>
           </button>
         )}
         <button
@@ -407,7 +408,7 @@ export function DiffViewer({
           className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-sans font-medium rounded bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition-colors"
         >
           <RotateCcw className="w-3 h-3" />
-          Revert Hunk
+          <span>{t('diffRevertHunk')}</span>
         </button>
       </div>
     </div>
