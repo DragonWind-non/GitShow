@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "High-performance desktop Git & GitHub client"
 authors = ["Long Vu"]
 edition = "2021"
+default-run = "gitshow"
 
 [lib]
 name = "gitshow_lib"
