@@ -178,4 +178,20 @@ describe('Task 11: 3-Column Studio Layout & Zustand App State', () => {
     expect(screen.getByTitle(/Pull/i)).toBeDefined();
     expect(screen.getByTitle(/Push/i)).toBeDefined();
   });
+
+  it('renders InteractiveRebaseModal when activeView is rebase and closes back to history', () => {
+    act(() => {
+      useGitStore.getState().setActiveView('rebase');
+    });
+
+    render(<AppLayout />);
+
+    expect(screen.getByTestId('rebase-modal')).toBeDefined();
+
+    // Close rebase modal
+    const closeBtn = screen.getByTestId('close-rebase-modal');
+    fireEvent.click(closeBtn);
+
+    expect(useGitStore.getState().activeView).toBe('history');
+  });
 });

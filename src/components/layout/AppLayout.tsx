@@ -6,6 +6,7 @@ import { StagingPanel } from '../staging/StagingPanel';
 import { DiffViewer } from '../diff/DiffViewer';
 import { CommandBridgeDrawer } from '../cli-bridge/CommandBridgeDrawer';
 import { UndoModal } from '../undo/UndoModal';
+import { InteractiveRebaseModal } from '../rebase/InteractiveRebaseModal';
 import { useGitStore } from '../../store/gitStore';
 
 export interface AppLayoutProps {
@@ -33,6 +34,10 @@ export function AppLayout({
     <div className="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
       <UndoModal
         isOpen={activeView === 'undo'}
+        onClose={() => setActiveView('history')}
+      />
+      <InteractiveRebaseModal
+        isOpen={activeView === 'rebase'}
         onClose={() => setActiveView('history')}
       />
       <div className="flex-1 flex flex-row min-h-0 overflow-hidden">

@@ -52,3 +52,11 @@ export interface UndoSnapshot {
   restore_cli_command: string;
 }
 
+export type RebaseAction = 'pick' | 'squash' | 'reword' | 'drop' | 'fixup';
+
+export interface RebaseItem {
+  action: RebaseAction;
+  sha: string;
+  message: string;
+}
+
