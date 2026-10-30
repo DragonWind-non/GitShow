@@ -30,32 +30,71 @@ fn get_store() -> &'static Mutex<HashMap<PathBuf, Vec<UndoSnapshot>>> {
     SNAPSHOT_STORE.get_or_init(|| Mutex::new(HashMap::new()))
 }
 
-fn get_repo_undo_file(repo_path: &Path) -> Option<PathBuf> {
-    if let Ok(repo) = git2::Repository::open(repo_path) {
-        return Some(repo.path().join("gitshow_undo.json"));
+pub fn get_appdata_undo_file() -> Option<PathBuf> {
+    if let Ok(file_path) = std::env::var("GITSHOW_UNDO_FILE") {
+        if !file_path.trim().is_empty() {
+            return Some(PathBuf::from(file_path));
+        }
     }
-    let direct = repo_path.join(".git");
-    if direct.exists() {
-        return Some(direct.join("gitshow_undo.json"));
+    if let Ok(dir_path) = std::env::var("GITSHOW_DATA_DIR") {
+        if !dir_path.trim().is_empty() {
+            return Some(PathBuf::from(dir_path).join("undo.json"));
+        }
     }
-    None
-}
 
-fn get_appdata_undo_file() -> Option<PathBuf> {
     #[cfg(windows)]
-    if let Ok(appdata) = std::env::var("APPDATA") {
-        return Some(PathBuf::from(appdata).join("gitshow").join("undo.json"));
+    {
+        if let Ok(appdata) = std::env::var("APPDATA") {
+            return Some(PathBuf::from(appdata).join("gitshow").join("undo.json"));
+        }
+        if let Ok(profile) = std::env::var("USERPROFILE") {
+            return Some(
+                PathBuf::from(profile)
+                    .join("AppData")
+                    .join("Roaming")
+                    .join("gitshow")
+                    .join("undo.json"),
+            );
+        }
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        if let Ok(home) = std::env::var("HOME") {
+            return Some(
+                PathBuf::from(home)
+                    .join("Library")
+                    .join("Application Support")
+                    .join("gitshow")
+                    .join("undo.json"),
+            );
+        }
+    }
+
+    #[cfg(not(any(windows, target_os = "macos")))]
+    {
+        if let Ok(xdg) = std::env::var("XDG_DATA_HOME") {
+            return Some(PathBuf::from(xdg).join("gitshow").join("undo.json"));
+        }
+        if let Ok(home) = std::env::var("HOME") {
+            return Some(
+                PathBuf::from(home)
+                    .join(".local")
+                    .join("share")
+                    .join("gitshow")
+                    .join("undo.json"),
+            );
+        }
+    }
+
+    if let Ok(home) = std::env::var("HOME") {
+        return Some(PathBuf::from(home).join(".gitshow").join("undo.json"));
+    }
+
     None
 }
 
 fn save_snapshots_to_disk(repo_path: &Path, snapshots: &[UndoSnapshot]) {
-    if let Some(file_path) = get_repo_undo_file(repo_path) {
-        if let Ok(json) = serde_json::to_string_pretty(snapshots) {
-            let _ = fs::write(file_path, json);
-        }
-    }
-
     if let Some(appdata_file) = get_appdata_undo_file() {
         if let Some(parent) = appdata_file.parent() {
             let _ = fs::create_dir_all(parent);
@@ -69,20 +108,22 @@ fn save_snapshots_to_disk(repo_path: &Path, snapshots: &[UndoSnapshot]) {
             };
         map.insert(key, snapshots.to_vec());
         if let Ok(json) = serde_json::to_string_pretty(&map) {
-            let _ = fs::write(appdata_file, json);
+            let tmp_file = appdata_file.with_file_name(format!(
+                "undo.json.tmp.{}.{}",
+                std::process::id(),
+                COUNTER.fetch_add(1, Ordering::Relaxed)
+            ));
+            if fs::write(&tmp_file, json).is_ok() {
+                if fs::rename(&tmp_file, &appdata_file).is_err() {
+                    let _ = fs::remove_file(&appdata_file);
+                    let _ = fs::rename(&tmp_file, &appdata_file);
+                }
+            }
         }
     }
 }
 
 fn load_snapshots_from_disk(repo_path: &Path) -> Vec<UndoSnapshot> {
-    if let Some(file_path) = get_repo_undo_file(repo_path) {
-        if let Ok(data) = fs::read_to_string(file_path) {
-            if let Ok(snaps) = serde_json::from_str::<Vec<UndoSnapshot>>(&data) {
-                return snaps;
-            }
-        }
-    }
-
     if let Some(appdata_file) = get_appdata_undo_file() {
         if let Ok(data) = fs::read_to_string(appdata_file) {
             if let Ok(map) = serde_json::from_str::<HashMap<String, Vec<UndoSnapshot>>>(&data) {
@@ -211,10 +252,14 @@ pub async fn rollback_snapshot(repo_path: &str, snapshot_id: &str) -> Result<Str
                 .await?;
 
         if apply_res.exit_code != 0 {
-            return Err(format!(
-                "Rollback stash apply failed: {}",
-                apply_res.stderr.trim()
-            ));
+            let err_msg = if !apply_res.stderr.trim().is_empty() {
+                apply_res.stderr.trim().to_string()
+            } else if !apply_res.stdout.trim().is_empty() {
+                apply_res.stdout.trim().to_string()
+            } else {
+                "Unknown error applying stash".to_string()
+            };
+            return Err(format!("Rollback stash apply failed: {}", err_msg));
         }
     }
 

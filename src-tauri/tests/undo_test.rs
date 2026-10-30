@@ -1,12 +1,18 @@
 use gitshow_lib::commands::git_cli::execute_git_command;
 use gitshow_lib::engine::undo::{
-    capture_pre_mutation_snapshot, get_undo_stack, rollback_snapshot,
+    capture_pre_mutation_snapshot, get_appdata_undo_file, get_undo_stack, rollback_snapshot,
 };
 use std::fs;
 use std::path::Path;
+use std::sync::OnceLock;
 use tempfile::tempdir;
 
+static TEST_DATA_DIR: OnceLock<tempfile::TempDir> = OnceLock::new();
+
 fn setup_test_repo() -> (tempfile::TempDir, String) {
+    let test_data = TEST_DATA_DIR.get_or_init(|| tempdir().expect("test data dir"));
+    std::env::set_var("GITSHOW_DATA_DIR", test_data.path());
+
     let dir = tempdir().expect("failed to create temp dir");
     let repo = git2::Repository::init(dir.path()).expect("failed to init repo");
 
@@ -236,10 +242,18 @@ async fn test_undo_persistence_on_disk() {
         .await
         .expect("capture");
 
-    let undo_json_path = Path::new(&repo_path).join(".git").join("gitshow_undo.json");
+    // 1. Verify zero proprietary files in .git
+    let git_undo_path = Path::new(&repo_path).join(".git").join("gitshow_undo.json");
+    assert!(
+        !git_undo_path.exists(),
+        "Never write proprietary files inside .git directory"
+    );
+
+    // 2. Verify persistence in app data undo.json
+    let undo_json_path = get_appdata_undo_file().expect("app data undo file path");
     assert!(
         undo_json_path.exists(),
-        "gitshow_undo.json must exist in .git folder"
+        "undo.json must exist in application data directory"
     );
 
     let content = fs::read_to_string(&undo_json_path).expect("read undo json");
@@ -254,4 +268,3 @@ async fn test_capture_empty_repo_fails() {
     let res = capture_pre_mutation_snapshot(&repo_path, "action on empty repo").await;
     assert!(res.is_err(), "snapshot on repo with no commits must fail");
 }
-
