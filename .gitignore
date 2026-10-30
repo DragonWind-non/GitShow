@@ -5,6 +5,8 @@ node_modules/
 # Rust build artifacts
 target/
 src-tauri/target/
+**/.cargo/config.toml
+.cargo/
 
 # Production builds
 dist/

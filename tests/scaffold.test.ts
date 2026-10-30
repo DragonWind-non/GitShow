@@ -59,4 +59,25 @@ describe('Project Scaffolding & Tauri v2 Shell Setup', () => {
     const claudePath = path.join(ROOT_DIR, 'CLAUDE.md');
     expect(fs.existsSync(claudePath), 'CLAUDE.md must exist').toBe(true);
   });
+
+  it('verifies src-tauri/capabilities/default.json exists with required permissions', () => {
+    const capPath = path.join(ROOT_DIR, 'src-tauri', 'capabilities', 'default.json');
+    expect(fs.existsSync(capPath), 'capabilities/default.json must exist').toBe(true);
+
+    const cap = JSON.parse(fs.readFileSync(capPath, 'utf-8'));
+    expect(cap.windows).toContain('main');
+    expect(cap.permissions).toContain('core:default');
+    expect(cap.permissions).toContain('shell:default');
+  });
+
+  it('verifies src-tauri/tauri.conf.json has window label and bundle icons', () => {
+    const confPath = path.join(ROOT_DIR, 'src-tauri', 'tauri.conf.json');
+    expect(fs.existsSync(confPath), 'tauri.conf.json must exist').toBe(true);
+
+    const conf = JSON.parse(fs.readFileSync(confPath, 'utf-8'));
+    expect(conf.app.windows[0].label).toBe('main');
+    expect(conf.bundle.active).toBe(true);
+    expect(conf.bundle.icon).toBeDefined();
+    expect(conf.bundle.icon.length).toBeGreaterThan(0);
+  });
 });
