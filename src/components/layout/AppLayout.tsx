@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
+import { DagCanvas } from '../graph/DagCanvas';
 import { useGitStore } from '../../store/gitStore';
 
 export interface AppLayoutProps {
@@ -39,11 +40,7 @@ export function AppLayout({
             >
               <TopBar />
               <div className="flex-1 min-h-0 overflow-auto">
-                {center ?? children ?? (
-                  <div className="h-full flex items-center justify-center text-slate-500 text-sm">
-                    DAG Canvas View (Task 12)
-                  </div>
-                )}
+                {center ?? children ?? <DagCanvas />}
               </div>
             </main>
 
