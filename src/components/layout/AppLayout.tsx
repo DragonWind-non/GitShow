@@ -2,6 +2,7 @@ import React from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { DagCanvas } from '../graph/DagCanvas';
+import { StagingPanel } from '../staging/StagingPanel';
 import { useGitStore } from '../../store/gitStore';
 
 export interface AppLayoutProps {
@@ -49,11 +50,7 @@ export function AppLayout({
               data-testid="right-column"
               className="w-80 shrink-0 h-full border-l border-slate-800 bg-slate-900/40 flex flex-col min-h-0 overflow-hidden"
             >
-              {right ?? (
-                <div className="h-full flex items-center justify-center text-slate-500 text-xs p-4 text-center">
-                  Inspector & Diff View (Tasks 13 & 14)
-                </div>
-              )}
+              {right ?? <StagingPanel />}
             </aside>
           </div>
 
