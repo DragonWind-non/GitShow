@@ -1,6 +1,6 @@
 # GitShow — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build GitShow — a lightweight, blazingly fast (<90MB RAM, <300ms startup) desktop Git & GitHub GUI app powered by Tauri v2, Rust, React 19, Canvas 2D virtualized DAG, Safe Undo (Reflog time machine), realtime Git CLI Bridge, and GitHub GraphQL PR Studio.
 
@@ -38,15 +38,15 @@
 - Consumes: Node.js & Cargo toolchains.
 - Produces: Working Tauri v2 desktop application shell capable of IPC communication.
 
-- [ ] **Step 1: Write scaffold sanity test in `tests/scaffold.test.ts`**
+- [x] **Step 1: Write scaffold sanity test in `tests/scaffold.test.ts`**
   Asserts that `package.json` contains required Tauri v2 dependencies and `src-tauri/Cargo.toml` specifies `git2`, `tokio`, `serde`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test` -> Expected: FAIL (files missing).
-- [ ] **Step 3: Initialize Git repo and scaffold project files**
+- [x] **Step 3: Initialize Git repo and scaffold project files**
   Initialize `git init`. Create `package.json` with `@tauri-apps/api`, `@tauri-apps/plugin-shell`, `react`, `react-dom`, `zustand`, `lucide-react`, `tailwindcss`. Create `src-tauri/Cargo.toml` with `tauri = "2"`, `git2 = "0.19"`, `tokio = { version = "1", features = ["full"] }`, `serde = { version = "1", features = ["derive"] }`, `serde_json = "1"`. Create project `CLAUDE.md`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add . && git commit -m "chore: scaffold tauri v2 react desktop application"`
 
 ---
@@ -78,15 +78,15 @@
   pub fn list_branches(path: &str) -> Result<Vec<BranchInfo>, String>;
   ```
 
-- [ ] **Step 1: Write unit test in `src-tauri/tests/repo_test.rs`**
+- [x] **Step 1: Write unit test in `src-tauri/tests/repo_test.rs`**
   Creates a temp git repository using `git2::Repository::init`, creates an initial commit and a feature branch, and asserts `open_repository` and `list_branches` return expected data.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test repo_test` -> Expected: FAIL (functions undefined).
-- [ ] **Step 3: Implement `engine/repo.rs`**
+- [x] **Step 3: Implement `engine/repo.rs`**
   Use `git2::Repository::open`. Parse head ref, local branches (`BranchType::Local`), and remote branches (`BranchType::Remote`).
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test repo_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(engine): add repository validation and branch listing"`
 
 ---
@@ -116,15 +116,15 @@
   pub fn build_commit_graph(repo_path: &str, max_count: usize) -> Result<Vec<DagCommit>, String>;
   ```
 
-- [ ] **Step 1: Write DAG test in `src-tauri/tests/dag_test.rs`**
+- [x] **Step 1: Write DAG test in `src-tauri/tests/dag_test.rs`**
   Build a git repo with a merge commit (branch A + branch B merged into main). Verify `build_commit_graph` assigns distinct lanes and correctly maps parent-child junction links.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test dag_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement topological sort and visual lane allocator in `dag.rs`**
+- [x] **Step 3: Implement topological sort and visual lane allocator in `dag.rs`**
   Traverse commit history using `revwalk` with `git2::Sort::TOPOLOGICAL | git2::Sort::TIME`. Assign lane indices using an active-lanes pool algorithm.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test dag_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(engine): implement commit DAG topological sorter and lane allocator"`
 
 ---
@@ -147,15 +147,15 @@
   }
   ```
 
-- [ ] **Step 1: Write lock manager test in `src-tauri/tests/lock_test.rs`**
+- [x] **Step 1: Write lock manager test in `src-tauri/tests/lock_test.rs`**
   Simulate parallel write operations; verify that secondary write waits for primary lock and `.git/index.lock` is respected with exponential backoff.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test lock_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement `RepoLockManager` in `src-tauri/src/engine/lock.rs`**
+- [x] **Step 3: Implement `RepoLockManager` in `src-tauri/src/engine/lock.rs`**
   Use `tokio::sync::Mutex` per repository path. Check for stale `.git/index.lock` files and pause the file watcher during lock execution.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test lock_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(engine): add RepoLockManager for Windows index.lock synchronization"`
 
 ---
@@ -181,15 +181,15 @@
   pub fn preview_command(args: &[&str]) -> String;
   ```
 
-- [ ] **Step 1: Write CLI command test in `src-tauri/tests/git_cli_test.rs`**
+- [x] **Step 1: Write CLI command test in `src-tauri/tests/git_cli_test.rs`**
   Execute `git status`, `git commit`, `git checkout` through `execute_git_command`. Assert `preview_command` matches terminal command string and output is captured.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test git_cli_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement `commands/git_cli.rs`**
+- [x] **Step 3: Implement `commands/git_cli.rs`**
   Use `tokio::process::Command`. Inject `GIT_TERMINAL_PROMPT=0`. Set UTF-8 encoding. Wrap with `RepoLockManager`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test git_cli_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(commands): implement system git CLI execution and preview generator"`
 
 ---
@@ -217,15 +217,15 @@
   pub fn get_undo_stack(repo_path: &str) -> Vec<UndoSnapshot>;
   ```
 
-- [ ] **Step 1: Write Safe Undo test in `src-tauri/tests/undo_test.rs`**
+- [x] **Step 1: Write Safe Undo test in `src-tauri/tests/undo_test.rs`**
   Create uncommitted changes in working tree -> run `capture_pre_mutation_snapshot` -> execute destructive `git reset --hard HEAD~1` -> run `rollback_snapshot` -> assert commit and uncommitted changes are 100% recovered.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test undo_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement `engine/undo.rs`**
+- [x] **Step 3: Implement `engine/undo.rs`**
   Run `git stash create` to get dangling commit SHA without touching `refs/stash`. Capture `HEAD` commit SHA. Store snapshots in memory and `%APPDATA%/gitshow/undo.json`. Rollback runs `git reset --hard <pre_head_sha>` then applies stash commit.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test undo_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(engine): implement Safe Undo stack with dangling stash capture"`
 
 ---
@@ -244,15 +244,15 @@
   pub async fn execute_interactive_rebase(repo: &str, base_sha: &str, items: Vec<RebaseItem>) -> Result<(), String>;
   ```
 
-- [ ] **Step 1: Write rebase test in `src-tauri/tests/rebase_test.rs`**
+- [x] **Step 1: Write rebase test in `src-tauri/tests/rebase_test.rs`**
   Create 3 sequential commits -> invoke rebase reordering commit 2 before commit 1 and squashing commit 3 -> verify git log reflects new history without stalling for user editor.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test rebase_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement `commands/rebase.rs` and `rebase_helper`**
+- [x] **Step 3: Implement `commands/rebase.rs` and `rebase_helper`**
   Format `git-rebase-todo` string in memory/temp file. Pass `GIT_SEQUENCE_EDITOR="<path-to-helper> <temp-file>"` to `git rebase -i`. Helper writes contents into the rebase-todo path provided by git.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test rebase_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(rebase): implement visual interactive rebase helper sequence editor"`
 
 ---
@@ -282,15 +282,15 @@
   pub fn remove_token() -> Result<(), String>;
   ```
 
-- [ ] **Step 1: Write auth unit test in `src-tauri/tests/auth_test.rs`**
+- [x] **Step 1: Write auth unit test in `src-tauri/tests/auth_test.rs`**
   Mock GitHub Device code endpoint and test keyring token storage/retrieval.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test auth_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement `github/auth.rs`**
+- [x] **Step 3: Implement `github/auth.rs`**
   Implement RFC 8628 via `reqwest`. Securely persist tokens in OS Credential Manager using `keyring-rs`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test auth_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(github): implement Device Flow OAuth and OS keyring integration"`
 
 ---
@@ -319,15 +319,15 @@
   pub async fn fetch_pr_diff(owner: &str, repo: &str, pr_number: u64, token: &str) -> Result<String, String>;
   ```
 
-- [ ] **Step 1: Write GraphQL test in `src-tauri/tests/graphql_test.rs`**
+- [x] **Step 1: Write GraphQL test in `src-tauri/tests/graphql_test.rs`**
   Mock GitHub GraphQL endpoint response; assert deserialization into `PullRequestItem`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test graphql_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement `github/graphql.rs`**
+- [x] **Step 3: Implement `github/graphql.rs`**
   Write single GraphQL query requesting PR node fields (`number`, `title`, `author { login }`, `state`, `headRefName`, `baseRefName`, `reviewDecision`). Fetch PR diff with `Accept: application/vnd.github.v3.diff`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test graphql_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(github): implement GraphQL PR studio queries and diff fetcher"`
 
 ---
@@ -349,15 +349,15 @@
   pub fn resize_pty(session_id: u32, cols: u16, rows: u16) -> Result<(), String>;
   ```
 
-- [ ] **Step 1: Write PTY test in `src-tauri/tests/pty_test.rs`**
+- [x] **Step 1: Write PTY test in `src-tauri/tests/pty_test.rs`**
   Spawn PTY session running `echo "gitshow"` and verify stdout event received.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `cargo test --test pty_test` -> Expected: FAIL.
-- [ ] **Step 3: Implement `terminal/pty.rs`**
+- [x] **Step 3: Implement `terminal/pty.rs`**
   Use `portable_pty::native_pty_system()`. Spawn `powershell.exe` on Windows (or `$SHELL` on Unix). Pipe stdout to Tauri event emitter `pty-data:<id>`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `cargo test --test pty_test` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src-tauri/ && git commit -m "feat(terminal): implement native PTY terminal session with portable-pty"`
 
 ---
@@ -376,15 +376,15 @@
 - Consumes: Tauri IPC invokes (`open_repository`, `list_branches`).
 - Produces: Responsive 3-Column Studio shell (Sidebar | Main DAG | Diff/Inspector) with Dark/Light theme toggling.
 
-- [ ] **Step 1: Write layout component test in `tests/layout.test.tsx`**
+- [x] **Step 1: Write layout component test in `tests/layout.test.tsx`**
   Render `AppLayout` with mock Zustand state; verify 3 columns and bottom drawer exist in DOM.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/layout.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Implement Zustand store and `AppLayout`**
+- [x] **Step 3: Implement Zustand store and `AppLayout`**
   Define `GitStore` for active repo, branch list, selected commit, staged/unstaged files, and CLI preview string. Build `Sidebar` showing local/remote branches and stashes.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/layout.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/ tests/ && git commit -m "feat(ui): build 3-column studio layout and zustand git store"`
 
 ---
@@ -400,15 +400,15 @@
 - Consumes: `commits: DagCommit[]`, container dimensions.
 - Produces: 60fps virtualized Canvas rendering commit nodes, branch lane colored strokes, bezier curves for merge junctions, and click hit-testing.
 
-- [ ] **Step 1: Write canvas renderer test in `tests/dagRenderer.test.ts`**
+- [x] **Step 1: Write canvas renderer test in `tests/dagRenderer.test.ts`**
   Verify visible commit slice calculation based on `scrollTop` and row height; verify hit detection returns commit under `(x, y)`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/dagRenderer.test.ts` -> Expected: FAIL.
-- [ ] **Step 3: Implement `DagCanvas.tsx` and `dagRenderer.ts`**
+- [x] **Step 3: Implement `DagCanvas.tsx` and `dagRenderer.ts`**
   Use HTML5 2D Canvas with `devicePixelRatio` scaling. Render only rows in `[scrollTop - buffer, scrollTop + height + buffer]`. Draw bezier curves for merge/branch splits. Support drag-and-drop branch merge context menu.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/dagRenderer.test.ts` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/components/graph/ && git commit -m "feat(graph): implement virtualized canvas 2D commit DAG visualizer"`
 
 ---
@@ -424,15 +424,15 @@
 - Consumes: Unstaged & Staged file list from IPC `git_status`.
 - Produces: UI to Stage All, Unstage All, Stage individual file, Commit message input, Amend toggle, and Commit button with CLI preview update.
 
-- [ ] **Step 1: Write staging test in `tests/staging.test.tsx`**
+- [x] **Step 1: Write staging test in `tests/staging.test.tsx`**
   Verify clicking "Stage" moves item from unstaged to staged; verify typing commit message updates preview command `git commit -m "..."`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/staging.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Implement `StagingPanel.tsx`**
+- [x] **Step 3: Implement `StagingPanel.tsx`**
   Integrate with `execute_git_command(["add", path])`, `execute_git_command(["restore", "--staged", path])`, and `execute_git_command(["commit", "-m", msg])`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/staging.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/components/staging/ && git commit -m "feat(staging): implement staging panel and commit controller"`
 
 ---
@@ -448,15 +448,15 @@
 - Consumes: Raw unified diff string from IPC `git_diff`.
 - Produces: Syntax-highlighted side-by-side or unified view with line numbers, addition/deletion colors, and Stage Hunk / Revert Hunk buttons.
 
-- [ ] **Step 1: Write diff parser test in `tests/diffViewer.test.ts`**
+- [x] **Step 1: Write diff parser test in `tests/diffViewer.test.ts`**
   Parse diff string with 2 hunks; assert lines correctly classified as header, addition, deletion, or context.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/diffViewer.test.ts` -> Expected: FAIL.
-- [ ] **Step 3: Implement `diffParser.ts` and `DiffViewer.tsx`**
+- [x] **Step 3: Implement `diffParser.ts` and `DiffViewer.tsx`**
   Use `shiki` with bundled lightweight grammar for high-speed syntax highlighting. Render lines with `@tanstack/react-virtual` for large diffs. Support "Stage Hunk" button triggering `git apply --cached`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/diffViewer.test.ts` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/components/diff/ && git commit -m "feat(diff): build virtualized lightweight diff viewer with shiki highlighting"`
 
 ---
@@ -472,15 +472,15 @@
 - Consumes: Current CLI preview string from `gitStore` and PTY IPC events.
 - Produces: Collapsible bottom drawer showing realtime Git CLI command, "Copy CLI" button, "Explain Flags" popover, and toggleable interactive `@xterm/xterm` terminal.
 
-- [ ] **Step 1: Write CLI bridge component test in `tests/cliBridge.test.tsx`**
+- [x] **Step 1: Write CLI bridge component test in `tests/cliBridge.test.tsx`**
   Assert drawer renders command preview; clicking "Copy" invokes clipboard API; toggling terminal mounts xterm container.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/cliBridge.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Implement `CommandBridgeDrawer.tsx` and `EmbeddedTerminal.tsx`**
+- [x] **Step 3: Implement `CommandBridgeDrawer.tsx` and `EmbeddedTerminal.tsx`**
   Connect xterm.js instance with Tauri PTY IPC channels (`write_to_pty`, `pty-data`). Format git command explanation tooltips.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/cliBridge.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/components/cli-bridge/ && git commit -m "feat(cli): implement realtime CLI command bridge and embedded xterm drawer"`
 
 ---
@@ -496,15 +496,15 @@
 - Consumes: Undo snapshots from `get_undo_stack`.
 - Produces: Safe Undo drawer showing recovery timeline, 1-Click Rollback button with inverse command preview (`git reset --hard HEAD@{1}`), and Simulation warning modal before dangerous commands.
 
-- [ ] **Step 1: Write UndoModal test in `tests/undoModal.test.tsx`**
+- [x] **Step 1: Write UndoModal test in `tests/undoModal.test.tsx`**
   Render `UndoModal` with 2 snapshots; assert clicking "Rollback" invokes `rollback_snapshot`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/undoModal.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Implement `UndoModal.tsx` and `SimulationPrompt.tsx`**
+- [x] **Step 3: Implement `UndoModal.tsx` and `SimulationPrompt.tsx`**
   Display visual timeline of actions with timestamp and pre-mutation commit ID. Display red warning dialog showing orphaned commits before `reset --hard`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/undoModal.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/components/undo/ && git commit -m "feat(undo): build Safe Undo reflog time machine and simulation modal"`
 
 ---
@@ -520,15 +520,15 @@
 - Consumes: Commit range to rebase onto upstream branch.
 - Produces: Modal with drag-to-reorder commits, action dropdown (`pick`, `squash`, `reword`, `drop`), commit message inline editor, and "Start Rebase" button.
 
-- [ ] **Step 1: Write rebase modal test in `tests/rebaseModal.test.tsx`**
+- [x] **Step 1: Write rebase modal test in `tests/rebaseModal.test.tsx`**
   Render rebase modal with 3 commits; change commit 2 action to `squash`; verify payload to `execute_interactive_rebase`.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/rebaseModal.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Implement `InteractiveRebaseModal.tsx`**
+- [x] **Step 3: Implement `InteractiveRebaseModal.tsx`**
   Use HTML5 drag-and-drop or pointer events to reorder rows. Connect to Tauri command `execute_interactive_rebase`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/rebaseModal.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/components/rebase/ && git commit -m "feat(rebase): implement visual interactive rebase modal"`
 
 ---
@@ -545,15 +545,15 @@
 - Consumes: GraphQL PR items and diff from `fetch_pull_requests`.
 - Produces: PR list filterable by state, PR detail with inline diff review, comment box, Approve/Merge button, and 1-Click Fork Sync button.
 
-- [ ] **Step 1: Write PR Studio test in `tests/prStudio.test.tsx`**
+- [x] **Step 1: Write PR Studio test in `tests/prStudio.test.tsx`**
   Render `PrStudio` with mock PR items; select PR -> verify `PrDetailView` displays title, author, and diff view.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   Run: `pnpm test tests/prStudio.test.tsx` -> Expected: FAIL.
-- [ ] **Step 3: Implement `PrStudio.tsx` and `ForkSyncButton.tsx`**
+- [x] **Step 3: Implement `PrStudio.tsx` and `ForkSyncButton.tsx`**
   Render PR list with badge statuses. Implement `ForkSyncButton` calling `git fetch upstream && git merge upstream/main`.
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test tests/prStudio.test.tsx` -> Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add src/components/github/ && git commit -m "feat(github): implement GitHub PR studio and 1-click fork sync"`
 
 ---
@@ -568,20 +568,20 @@
 - Consumes: Complete assembled Tauri application.
 - Produces: Automated verification of full developer journey on a real temporary git repository.
 
-- [ ] **Step 1: Write complete workflow integration test**
+- [x] **Step 1: Write complete workflow integration test**
   Automates:
   1. Open temp repo.
   2. Stage modified files and commit with GUI command bridge.
   3. Create and switch to new branch `feature/test`.
   4. Perform a merge and inspect DAG graph lane allocation.
   5. Perform an unsafe `reset --hard` and execute 1-Click Safe Undo to recover code.
-- [ ] **Step 2: Run test to verify it fails before wiring**
+- [x] **Step 2: Run test to verify it fails before wiring**
   Run: `pnpm test:e2e` -> Expected: FAIL.
-- [ ] **Step 3: Wire frontend-backend bridge in `src/App.tsx` and `src-tauri/src/main.rs`**
+- [x] **Step 3: Wire frontend-backend bridge in `src/App.tsx` and `src-tauri/src/main.rs`**
   Register all Tauri IPC commands (`open_repository`, `list_branches`, `build_commit_graph`, `execute_git_command`, `capture_pre_mutation_snapshot`, `rollback_snapshot`, `execute_interactive_rebase`, `fetch_pull_requests`, `create_pty_session`).
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
   Run: `pnpm test:e2e` -> Expected: ALL PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add tests/ src/ src-tauri/ && git commit -m "test(e2e): verify end-to-end git workflow and undo recovery"`
 
 ---
@@ -597,15 +597,15 @@
 - Consumes: Production build artifacts.
 - Produces: Validated installer/executable meeting < 20MB bundle and < 90MB idle RAM.
 
-- [ ] **Step 1: Write bundle size and performance threshold test**
+- [x] **Step 1: Write bundle size and performance threshold test**
   Asserts production binary size < 20MB and frontend JS bundle < 1.5MB gzip.
-- [ ] **Step 2: Run test to verify**
+- [x] **Step 2: Run test to verify**
   Run: `node scripts/audit_bundle.js` -> Expected: PASS.
-- [ ] **Step 3: Configure release profile in `src-tauri/Cargo.toml`**
+- [x] **Step 3: Configure release profile in `src-tauri/Cargo.toml`**
   Set `opt-level = "z"`, `lto = true`, `codegen-units = 1`, `panic = "abort"`, `strip = true` for minimum binary size.
-- [ ] **Step 4: Verify build succeeds**
+- [x] **Step 4: Verify build succeeds**
   Run: `pnpm build` -> Expected: Clean build with zero warnings.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   `git add scripts/ src-tauri/ && git commit -m "chore(release): configure binary size optimizations and bundle audit"`
 
 ---
