@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "test": "vitest run",
     "test:e2e": "vitest run tests/e2e",
+    "audit": "node scripts/audit_bundle.js",
     "tauri": "tauri"
   },
   "dependencies": {

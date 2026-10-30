@@ -10,7 +10,8 @@ import {
   Minus,
 } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { createHighlighter, type Highlighter, type BundledLanguage } from 'shiki';
+import { createHighlighterCore, type HighlighterCore } from 'shiki/core';
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 import {
   parseUnifiedDiff,
   generateHunkPatch,
@@ -20,26 +21,30 @@ import {
 } from './diffParser';
 import { useGitStore } from '../../store/gitStore';
 
-let shikiInstance: Highlighter | null = null;
-let shikiPromise: Promise<Highlighter | null> | null = null;
+let shikiInstance: HighlighterCore | null = null;
+let shikiPromise: Promise<HighlighterCore | null> | null = null;
 
-async function getShiki(): Promise<Highlighter | null> {
+async function getShiki(): Promise<HighlighterCore | null> {
   if (shikiInstance) return shikiInstance;
   if (!shikiPromise) {
-    shikiPromise = createHighlighter({
-      themes: ['github-dark', 'github-light'],
-      langs: [
-        'typescript',
-        'javascript',
-        'tsx',
-        'jsx',
-        'json',
-        'rust',
-        'python',
-        'markdown',
-        'html',
-        'css',
+    shikiPromise = createHighlighterCore({
+      themes: [
+        import('shiki/themes/github-dark.mjs'),
+        import('shiki/themes/github-light.mjs'),
       ],
+      langs: [
+        import('shiki/langs/typescript.mjs'),
+        import('shiki/langs/javascript.mjs'),
+        import('shiki/langs/tsx.mjs'),
+        import('shiki/langs/jsx.mjs'),
+        import('shiki/langs/json.mjs'),
+        import('shiki/langs/rust.mjs'),
+        import('shiki/langs/python.mjs'),
+        import('shiki/langs/markdown.mjs'),
+        import('shiki/langs/html.mjs'),
+        import('shiki/langs/css.mjs'),
+      ],
+      engine: createJavaScriptRegexEngine(),
     })
       .then((h) => {
         shikiInstance = h;
@@ -172,7 +177,7 @@ function highlightCode(
       const loadedLangs = shikiInstance.getLoadedLanguages();
       if (loadedLangs.includes(lang)) {
         const tokens = shikiInstance.codeToTokensBase(code, {
-          lang: lang as BundledLanguage,
+          lang: lang,
           theme: shikiTheme,
         });
         if (tokens && tokens.length > 0 && tokens[0].length > 0) {
