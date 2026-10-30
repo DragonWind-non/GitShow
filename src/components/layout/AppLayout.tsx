@@ -7,6 +7,7 @@ import { DiffViewer } from '../diff/DiffViewer';
 import { CommandBridgeDrawer } from '../cli-bridge/CommandBridgeDrawer';
 import { UndoModal } from '../undo/UndoModal';
 import { InteractiveRebaseModal } from '../rebase/InteractiveRebaseModal';
+import { PrStudio } from '../github/PrStudio';
 import { useGitStore } from '../../store/gitStore';
 
 export interface AppLayoutProps {
@@ -57,14 +58,22 @@ export function AppLayout({
             >
               <TopBar />
               <div className="flex-1 min-h-0 overflow-auto">
-                {center ?? children ?? <DagCanvas />}
+                {center ?? children ?? (
+                  activeView === 'pull-requests' ? (
+                    <PrStudio />
+                  ) : (
+                    <DagCanvas />
+                  )
+                )}
               </div>
             </main>
 
             {/* Right Column: Inspector / Staging / Diff */}
             <aside
               data-testid="right-column"
-              className="w-80 shrink-0 h-full border-l border-slate-800 bg-slate-900/40 flex flex-col min-h-0 overflow-hidden"
+              className={`w-80 shrink-0 h-full border-l border-slate-800 bg-slate-900/40 flex flex-col min-h-0 overflow-hidden ${
+                activeView === 'pull-requests' && !right ? 'hidden' : ''
+              }`}
             >
               {right ??
                 (selectedFile ? (

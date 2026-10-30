@@ -60,3 +60,14 @@ export interface RebaseItem {
   message: string;
 }
 
+export interface PullRequestItem {
+  number: number;
+  title: string;
+  author: string;
+  state: 'OPEN' | 'MERGED' | 'CLOSED' | string;
+  head_ref: string;
+  base_ref: string;
+  comments_count: number;
+  review_decision?: string | null;
+}
+
