@@ -26,3 +26,12 @@ Thumbs.db
 # Superpowers scratchpad & logs
 .superpowers/
 *.log
+
+# Secrets & Environment
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+undo.json
+

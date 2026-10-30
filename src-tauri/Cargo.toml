@@ -2,7 +2,7 @@
 name = "gitshow"
 version = "0.1.0"
 description = "High-performance desktop Git & GitHub client"
-authors = ["Long Vu"]
+authors = ["GitShow Team"]
 edition = "2021"
 default-run = "gitshow"
 
