@@ -13,6 +13,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { useGitStore, type ActiveView } from '../../store/gitStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export function Sidebar() {
   const {
@@ -24,14 +25,16 @@ export function Sidebar() {
     setActiveView,
   } = useGitStore();
 
+  const { t } = useTranslation();
+
   const localBranches = branches.filter((b) => !b.is_remote);
   const remoteBranches = branches.filter((b) => b.is_remote);
 
   const navItems: { id: ActiveView; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { id: 'history', label: 'History & DAG', icon: History },
-    { id: 'rebase', label: 'Interactive Rebase', icon: GitCommit },
-    { id: 'pull-requests', label: 'Pull Requests', icon: GitPullRequest },
-    { id: 'undo', label: 'Undo & Reflog', icon: RotateCcw },
+    { id: 'history', label: t('navHistory'), icon: History },
+    { id: 'rebase', label: t('navRebase'), icon: GitCommit },
+    { id: 'pull-requests', label: t('navPullRequests'), icon: GitPullRequest },
+    { id: 'undo', label: t('navUndo'), icon: RotateCcw },
   ];
 
   return (
@@ -40,7 +43,7 @@ export function Sidebar() {
       <div className="p-3 border-b border-slate-800 bg-slate-900/50">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            Repository
+            {t('repoHeader')}
           </span>
           {repoInfo && (
             <span
@@ -53,12 +56,12 @@ export function Sidebar() {
               {repoInfo.is_clean ? (
                 <>
                   <ShieldCheck className="w-3 h-3 mr-0.5" />
-                  <span>Clean</span>
+                  <span>{t('statusClean')}</span>
                 </>
               ) : (
                 <>
                   <ShieldAlert className="w-3 h-3 mr-0.5" />
-                  <span>Dirty</span>
+                  <span>{t('statusDirty')}</span>
                 </>
               )}
             </span>
@@ -69,11 +72,11 @@ export function Sidebar() {
           <div className="mt-2 flex items-center space-x-2 text-xs text-slate-300">
             <GitBranch className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="font-medium truncate">
-              {repoInfo.is_detached ? 'Detached HEAD' : repoInfo.current_branch || 'HEAD'}
+              {repoInfo.is_detached ? t('detachedHead') : repoInfo.current_branch || 'HEAD'}
             </span>
           </div>
         ) : (
-          <p className="mt-1 text-xs text-slate-500">No active repository</p>
+          <p className="mt-1 text-xs text-slate-500">{t('bannerNoRepo')}</p>
         )}
       </div>
 
@@ -106,12 +109,12 @@ export function Sidebar() {
         {/* Local branches */}
         <div>
           <div className="flex items-center justify-between px-2 mb-1 text-[11px] font-semibold text-slate-400 tracking-wider uppercase">
-            <span>Local Branches</span>
+            <span>{t('sectionLocalBranches')}</span>
             <span className="text-[10px] text-slate-500">{localBranches.length}</span>
           </div>
           <div className="space-y-0.5">
             {localBranches.length === 0 ? (
-              <div className="px-2 py-1 text-slate-500 italic">No local branches</div>
+              <div className="px-2 py-1 text-slate-500 italic">{t('emptyBranches')}</div>
             ) : (
               localBranches.map((branch) => (
                 <div
@@ -141,12 +144,12 @@ export function Sidebar() {
         {/* Remote branches */}
         <div>
           <div className="flex items-center justify-between px-2 mb-1 text-[11px] font-semibold text-slate-400 tracking-wider uppercase">
-            <span>Remote Branches</span>
+            <span>{t('sectionRemoteBranches')}</span>
             <span className="text-[10px] text-slate-500">{remoteBranches.length}</span>
           </div>
           <div className="space-y-0.5">
             {remoteBranches.length === 0 ? (
-              <div className="px-2 py-1 text-slate-500 italic">No remote branches</div>
+              <div className="px-2 py-1 text-slate-500 italic">{t('emptyBranches')}</div>
             ) : (
               remoteBranches.map((branch) => (
                 <div
@@ -164,12 +167,12 @@ export function Sidebar() {
         {/* Tags */}
         <div>
           <div className="flex items-center justify-between px-2 mb-1 text-[11px] font-semibold text-slate-400 tracking-wider uppercase">
-            <span>Tags</span>
+            <span>{t('sectionTags')}</span>
             <span className="text-[10px] text-slate-500">{tags.length}</span>
           </div>
           <div className="space-y-0.5">
             {tags.length === 0 ? (
-              <div className="px-2 py-1 text-slate-500 italic">No tags</div>
+              <div className="px-2 py-1 text-slate-500 italic">{t('emptyTags')}</div>
             ) : (
               tags.map((tag) => (
                 <div
@@ -187,12 +190,12 @@ export function Sidebar() {
         {/* Stashes */}
         <div>
           <div className="flex items-center justify-between px-2 mb-1 text-[11px] font-semibold text-slate-400 tracking-wider uppercase">
-            <span>Stashes</span>
+            <span>{t('sectionStashes')}</span>
             <span className="text-[10px] text-slate-500">{stashes.length}</span>
           </div>
           <div className="space-y-0.5">
             {stashes.length === 0 ? (
-              <div className="px-2 py-1 text-slate-500 italic">No stashes</div>
+              <div className="px-2 py-1 text-slate-500 italic">{t('emptyStashes')}</div>
             ) : (
               stashes.map((stash) => (
                 <div

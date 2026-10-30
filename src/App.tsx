@@ -3,6 +3,7 @@ import { FolderOpen, AlertCircle, Loader2 } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
 import { AppLayout } from './components/layout/AppLayout';
 import { useGitStore } from './store/gitStore';
+import { useTranslation } from './i18n/useTranslation';
 import type { RepoInfo, BranchInfo, DagCommit } from './types/git';
 
 export interface AppProps {
@@ -15,6 +16,8 @@ export function App({ initialRepoPath }: AppProps = {}) {
   const setRepoInfo = useGitStore((state) => state.setRepoInfo);
   const setBranches = useGitStore((state) => state.setBranches);
   const setCommits = useGitStore((state) => state.setCommits);
+
+  const { t } = useTranslation();
 
   const [inputPath, setInputPath] = useState(initialRepoPath || '');
   const [isOpenModalVisible, setIsOpenModalVisible] = useState(false);
@@ -100,7 +103,7 @@ export function App({ initialRepoPath }: AppProps = {}) {
         >
           <div className="flex items-center space-x-2">
             <FolderOpen className="w-4 h-4 text-emerald-400" />
-            <span className="font-medium text-slate-200">No repository opened</span>
+            <span className="font-medium text-slate-200">{t('bannerNoRepo')}</span>
           </div>
           <div className="flex items-center space-x-2">
             <input
@@ -111,7 +114,7 @@ export function App({ initialRepoPath }: AppProps = {}) {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') void openRepository(inputPath);
               }}
-              placeholder="Enter local repo path..."
+              placeholder={t('bannerInputPlaceholder')}
               className="bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 w-64 text-xs font-mono"
             />
             <button
@@ -126,7 +129,7 @@ export function App({ initialRepoPath }: AppProps = {}) {
               ) : (
                 <FolderOpen className="w-3.5 h-3.5 mr-1" />
               )}
-              <span>Open Repository</span>
+              <span>{isLoading ? t('bannerOpening') : t('bannerOpenBtn')}</span>
             </button>
           </div>
         </div>
