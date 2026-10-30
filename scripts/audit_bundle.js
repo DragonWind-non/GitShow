@@ -8,6 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as zlib from 'zlib';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -56,9 +57,16 @@ function main() {
   console.log('\n[2/3] Checking Frontend bundle size (dist/assets)...');
   const distDir = path.join(ROOT_DIR, 'dist', 'assets');
   if (!fs.existsSync(distDir)) {
-    console.error('FAIL: dist/assets not found. Run `pnpm build` first.');
-    passed = false;
-  } else {
+    console.log('INFO: dist/assets not found, compiling production bundle with `pnpm build`...');
+    try {
+      execSync('pnpm build', { cwd: ROOT_DIR, stdio: 'ignore' });
+    } catch {
+      console.error('FAIL: dist/assets not found and `pnpm build` failed.');
+      passed = false;
+    }
+  }
+
+  if (fs.existsSync(distDir)) {
     const files = fs.readdirSync(distDir);
     const jsFiles = files.filter((f) => f.endsWith('.js'));
 

@@ -11,6 +11,7 @@ import {
   getVisibleRange,
   hitTestCommit,
   renderDag,
+  getCommitIndexMap,
 } from '../src/components/graph/dagRenderer';
 import { DagCanvas } from '../src/components/graph/DagCanvas';
 import { useGitStore } from '../src/store/gitStore';
@@ -37,6 +38,42 @@ describe('dagRenderer - Layout Constants & Lane Colors', () => {
     // Wraps around when lane >= LANE_COLORS.length
     expect(getLaneColor(8)).toBe(LANE_COLORS[0]);
     expect(getLaneColor(9)).toBe(LANE_COLORS[1]);
+  });
+
+  it('caches commit index Map across animation frames using WeakMap', () => {
+    const commits: DagCommit[] = [
+      {
+        id: 'c1',
+        short_id: 'c1',
+        summary: 'Commit 1',
+        author_name: 'Dev',
+        author_email: 'd@test.com',
+        timestamp: 1000,
+        parent_ids: [],
+        lane: 0,
+        branch_names: [],
+        is_head: false,
+      },
+      {
+        id: 'c2',
+        short_id: 'c2',
+        summary: 'Commit 2',
+        author_name: 'Dev',
+        author_email: 'd@test.com',
+        timestamp: 2000,
+        parent_ids: ['c1'],
+        lane: 0,
+        branch_names: [],
+        is_head: true,
+      },
+    ];
+
+    const map1 = getCommitIndexMap(commits);
+    const map2 = getCommitIndexMap(commits);
+
+    expect(map1).toBe(map2); // Exact same reference from cache
+    expect(map1.get('c1')).toBe(0);
+    expect(map1.get('c2')).toBe(1);
   });
 });
 

@@ -44,12 +44,15 @@ export function InteractiveRebaseModal({
     if (initialItems && initialItems.length > 0) {
       setItems(initialItems);
     } else if (commits && commits.length > 0) {
-      // Default to top commits as pick
-      const defaultItems: RebaseItem[] = commits.slice(0, 5).map((c) => ({
-        sha: c.id,
-        action: 'pick',
-        message: c.summary,
-      }));
+      // Default to top commits as pick, ordered oldest-to-newest for git-rebase-todo
+      const defaultItems: RebaseItem[] = commits
+        .slice(0, 5)
+        .reverse()
+        .map((c) => ({
+          sha: c.id,
+          action: 'pick',
+          message: c.summary,
+        }));
       setItems(defaultItems);
     } else {
       setItems([]);

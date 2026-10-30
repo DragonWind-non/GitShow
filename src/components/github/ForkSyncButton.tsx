@@ -31,14 +31,20 @@ export function ForkSyncButton({
         const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
         if (isTauri) {
           const repoPath = useGitStore.getState().repoInfo?.path ?? '';
-          await invoke('execute_git_command', {
+          const fetchRes = await invoke<{ exit_code: number; stderr: string }>('execute_git_command', {
             repoPath,
             args: ['fetch', 'upstream'],
           });
-          await invoke('execute_git_command', {
+          if (fetchRes.exit_code !== 0) {
+            throw new Error(fetchRes.stderr || 'git fetch upstream failed');
+          }
+          const mergeRes = await invoke<{ exit_code: number; stderr: string }>('execute_git_command', {
             repoPath,
             args: ['merge', `upstream/${upstreamBranch}`],
           });
+          if (mergeRes.exit_code !== 0) {
+            throw new Error(mergeRes.stderr || `git merge upstream/${upstreamBranch} failed`);
+          }
         }
       }
       setSyncState('success');

@@ -35,7 +35,12 @@ pub async fn execute_git_command(
     args: Vec<String>,
 ) -> Result<CliExecutionResult, String> {
     let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
-    crate::commands::git_cli::execute_git_command(&repo_path, &args_ref).await
+    crate::commands::git_cli::execute_git_command_with_lock(
+        crate::engine::lock::RepoLockManager::global(),
+        &repo_path,
+        &args_ref,
+    )
+    .await
 }
 
 #[tauri::command]

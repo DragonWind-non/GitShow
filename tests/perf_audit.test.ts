@@ -23,6 +23,9 @@ describe('Task 20: Performance & Packaging Audit', () => {
 
   it('verifies frontend JS bundle total gzipped size is under 1.5MB', () => {
     const distAssetsDir = path.join(ROOT_DIR, 'dist', 'assets');
+    if (!fs.existsSync(distAssetsDir)) {
+      execSync('pnpm build', { cwd: ROOT_DIR, stdio: 'ignore' });
+    }
     expect(fs.existsSync(distAssetsDir)).toBe(true);
 
     const files = fs.readdirSync(distAssetsDir);

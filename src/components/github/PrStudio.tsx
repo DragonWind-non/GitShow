@@ -44,23 +44,48 @@ export function PrStudio({
   const repoInfo = useGitStore((s) => s.repoInfo);
   const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
-  // Determine owner & repo from props or repoInfo
-  const owner = repoOwner || 'owner';
-  const repo = repoName || 'repo';
+  // Resolve owner & repo from props or detect from git remote origin
+  const [resolvedOwner, setResolvedOwner] = useState(repoOwner || '');
+  const [resolvedRepo, setResolvedRepo] = useState(repoName || '');
+
+  useEffect(() => {
+    if (repoOwner && repoName) {
+      setResolvedOwner(repoOwner);
+      setResolvedRepo(repoName);
+      return;
+    }
+    const repoPath = repoInfo?.path;
+    if (isTauri && repoPath) {
+      invoke<{ stdout: string; exit_code: number }>('execute_git_command', {
+        repoPath,
+        args: ['remote', 'get-url', 'origin'],
+      })
+        .then((res) => {
+          if (res.exit_code === 0 && res.stdout) {
+            const match = res.stdout.trim().match(/[:/]([^/:]+)\/([^/:]+?)(\.git)?$/);
+            if (match) {
+              setResolvedOwner(match[1]);
+              setResolvedRepo(match[2]);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [repoOwner, repoName, repoInfo?.path, isTauri]);
 
   const loadPrs = useCallback(async () => {
     if (initialPrs && initialPrs.length > 0 && !isTauri) {
       setPrs(initialPrs);
       return;
     }
-    if (!isTauri) return;
+    if (!isTauri || !resolvedOwner || !resolvedRepo) return;
 
     try {
       setIsLoading(true);
       setError(null);
       const fetched = await invoke<PullRequestItem[]>('fetch_pull_requests', {
-        owner,
-        repo,
+        owner: resolvedOwner,
+        repo: resolvedRepo,
       });
       setPrs(fetched);
     } catch (err: unknown) {
@@ -68,15 +93,15 @@ export function PrStudio({
     } finally {
       setIsLoading(false);
     }
-  }, [initialPrs, isTauri, owner, repo]);
+  }, [initialPrs, isTauri, resolvedOwner, resolvedRepo]);
 
   useEffect(() => {
     if (initialPrs) {
       setPrs(initialPrs);
-    } else {
+    } else if (resolvedOwner && resolvedRepo) {
       loadPrs();
     }
-  }, [initialPrs, loadPrs]);
+  }, [initialPrs, resolvedOwner, resolvedRepo, loadPrs]);
 
   const handleSelectPr = async (pr: PullRequestItem) => {
     setSelectedPr(pr);
@@ -88,8 +113,8 @@ export function PrStudio({
       try {
         setIsLoadingDiff(true);
         const diffText = await invoke<string>('fetch_pr_diff', {
-          owner,
-          repo,
+          owner: resolvedOwner,
+          repo: resolvedRepo,
           prNumber: pr.number,
         });
         setDiffMap((prev) => ({ ...prev, [pr.number]: diffText }));

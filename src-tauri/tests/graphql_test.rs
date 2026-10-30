@@ -406,6 +406,31 @@ async fn test_fetch_pr_diff_success() {
 }
 
 #[tokio::test]
+async fn test_fetch_pr_diff_unauthenticated_omits_authorization_header() {
+    let _guard = SERIAL_TEST_LOCK.lock().await;
+
+    let expected_diff = "diff --git a/README.md b/README.md\n";
+
+    let (base_url, server_handle) = spawn_mock_server(move |req| {
+        assert_eq!(req.method, "GET");
+        assert_eq!(req.path, "/repos/owner_foo/repo_bar/pulls/77");
+        assert_eq!(req.headers.get("authorization"), None);
+        MockResponse::diff(200, expected_diff)
+    })
+    .await;
+
+    std::env::set_var("GITSHOW_GITHUB_API_URL", &base_url);
+
+    let diff = fetch_pr_diff("owner_foo", "repo_bar", 77, "")
+        .await
+        .expect("unauthenticated fetch_pr_diff should succeed without Authorization header");
+
+    assert_eq!(diff, expected_diff);
+
+    server_handle.abort();
+}
+
+#[tokio::test]
 async fn test_fetch_pr_diff_404_not_found() {
     let _guard = SERIAL_TEST_LOCK.lock().await;
 

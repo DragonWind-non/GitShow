@@ -25,6 +25,7 @@ export function DagCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number | null>(null);
+  const justDroppedRef = useRef(false);
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
@@ -43,10 +44,14 @@ export function DagCanvas() {
     const width = container.clientWidth || dimensions.width || 800;
     const height = container.clientHeight || dimensions.height || 600;
 
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    const targetWidth = Math.round(width * dpr);
+    const targetHeight = Math.round(height * dpr);
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+    }
 
     const scrollTop = container.scrollTop;
     const { startIndex, endIndex } = getVisibleRange(scrollTop, height, commits.length);
@@ -119,6 +124,10 @@ export function DagCanvas() {
 
   // Handle mouse click on canvas
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (justDroppedRef.current) {
+      justDroppedRef.current = false;
+      return;
+    }
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
@@ -189,6 +198,7 @@ export function DagCanvas() {
         const targetCommit = hitTestCommit(x, y, container.scrollTop, commits);
 
         if (targetCommit && targetCommit.id !== draggedCommit.id) {
+          justDroppedRef.current = true;
           const dragShort = draggedCommit.short_id || draggedCommit.id.slice(0, 7);
           setCliPreview(`git merge ${dragShort}`);
           setContextMenu({
@@ -224,7 +234,7 @@ export function DagCanvas() {
           {/* Scroll spacer that gives the container full virtual scroll height */}
           <div
             data-testid="dag-scroll-spacer"
-            style={{ height: totalHeight, width: '100%', minHeight: '100%' }}
+            style={{ height: totalHeight, width: '1px', position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
           />
 
           {/* Sticky canvas pinned to viewport */}
@@ -235,7 +245,7 @@ export function DagCanvas() {
             onContextMenu={handleContextMenu}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
-            className="absolute top-0 left-0 pointer-events-auto cursor-pointer"
+            className="sticky top-0 left-0 pointer-events-auto cursor-pointer block"
           />
         </>
       )}

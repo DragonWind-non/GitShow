@@ -66,6 +66,11 @@ impl RepoLockManager {
         }
     }
 
+    pub fn global() -> &'static Self {
+        static INSTANCE: std::sync::OnceLock<RepoLockManager> = std::sync::OnceLock::new();
+        INSTANCE.get_or_init(RepoLockManager::new)
+    }
+
     pub async fn get_repo_mutex(&self, repo: &Path) -> Arc<Mutex<()>> {
         let key = normalize_repo_path(repo);
         let mut map = self.locks.lock().await;

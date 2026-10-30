@@ -9,12 +9,14 @@ pub fn get_github_api_url() -> String {
         .to_string()
 }
 
-fn format_auth_header(token: &str) -> String {
+fn format_auth_header(token: &str) -> Option<String> {
     let trimmed = token.trim();
-    if trimmed.starts_with("Bearer ") {
-        trimmed.to_string()
+    if trimmed.is_empty() {
+        None
+    } else if trimmed.starts_with("Bearer ") {
+        Some(trimmed.to_string())
     } else {
-        format!("Bearer {trimmed}")
+        Some(format!("Bearer {trimmed}"))
     }
 }
 
@@ -112,12 +114,17 @@ pub async fn fetch_pull_requests(
         }
     });
 
-    let resp = client
+    let mut req = client
         .post(&url)
         .header("User-Agent", "GitShow")
-        .header("Authorization", format_auth_header(token))
         .header("Accept", "application/json")
-        .json(&body)
+        .json(&body);
+
+    if let Some(auth) = format_auth_header(token) {
+        req = req.header("Authorization", auth);
+    }
+
+    let resp = req
         .send()
         .await
         .map_err(|e| format!("Network error querying GraphQL API: {e}"))?;
@@ -187,11 +194,16 @@ pub async fn fetch_pr_diff(
     let url = format!("{base_url}/repos/{owner}/{repo}/pulls/{pr_number}");
 
     let client = reqwest::Client::new();
-    let resp = client
+    let mut req = client
         .get(&url)
         .header("User-Agent", "GitShow")
-        .header("Authorization", format_auth_header(token))
-        .header("Accept", "application/vnd.github.v3.diff")
+        .header("Accept", "application/vnd.github.v3.diff");
+
+    if let Some(auth) = format_auth_header(token) {
+        req = req.header("Authorization", auth);
+    }
+
+    let resp = req
         .send()
         .await
         .map_err(|e| format!("Network error fetching PR diff: {e}"))?;

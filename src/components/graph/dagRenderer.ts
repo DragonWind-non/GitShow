@@ -58,6 +58,20 @@ export function hitTestCommit(
   return null;
 }
 
+const commitIndexCache = new WeakMap<DagCommit[], Map<string, number>>();
+
+export function getCommitIndexMap(commits: DagCommit[]): Map<string, number> {
+  let map = commitIndexCache.get(commits);
+  if (!map) {
+    map = new Map<string, number>();
+    for (let idx = 0; idx < commits.length; idx++) {
+      map.set(commits[idx].id, idx);
+    }
+    commitIndexCache.set(commits, map);
+  }
+  return map;
+}
+
 export function renderDag(
   ctx: CanvasRenderingContext2D,
   commits: DagCommit[],
@@ -121,10 +135,7 @@ export function renderDag(
   }
 
   // Build commit ID -> row index lookup map
-  const commitIndexMap = new Map<string, number>();
-  for (let idx = 0; idx < commits.length; idx++) {
-    commitIndexMap.set(commits[idx].id, idx);
-  }
+  const commitIndexMap = getCommitIndexMap(commits);
 
   // Connection lines (straight for same lane, bezier curves for merge/split)
   const lineStart = Math.max(0, startIndex - 20);
