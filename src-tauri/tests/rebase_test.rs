@@ -200,3 +200,53 @@ async fn test_rebase_conflict_returns_error() {
         "error should contain conflict details: {err}"
     );
 }
+
+#[tokio::test]
+async fn test_squash_with_empty_message_exercises_editor_fallback() {
+    let (dir, repo_path) = setup_test_repo();
+
+    let c0_sha = make_commit(&repo_path, "c0.txt", "base", "chore: initial commit").await;
+    let c1_sha = make_commit(&repo_path, "file1.txt", "file 1", "feat: commit 1").await;
+    let c2_sha = make_commit(&repo_path, "file2.txt", "file 2", "feat: commit 2").await;
+
+    // Squash C2 into C1 with empty message ("")
+    // When messages is empty, messages_temp is None.
+    // The editor command is `<helper> --editor`, invoked by git as `<helper> --editor <commit-editmsg>`.
+    // rebase_helper must handle 1-arg option `--editor <target>` without failing or parsing target as JSON.
+    let items = vec![
+        RebaseItem {
+            action: "pick".to_string(),
+            sha: c1_sha.clone(),
+            message: "feat: commit 1".to_string(),
+        },
+        RebaseItem {
+            action: "squash".to_string(),
+            sha: c2_sha.clone(),
+            message: "".to_string(),
+        },
+    ];
+
+    let result = execute_interactive_rebase(&repo_path, &c0_sha, items).await;
+    assert!(result.is_ok(), "rebase with empty squash message should succeed: {:?}", result.err());
+
+    // Total commits after c0 must be 1 (C1 and C2 squashed together)
+    let count_res = execute_git_command(&repo_path, &["rev-list", "--count", &format!("{c0_sha}..HEAD")])
+        .await
+        .expect("rev-list count");
+    assert_eq!(count_res.stdout.trim(), "1");
+
+    // Both files should exist
+    assert!(dir.path().join("file1.txt").exists());
+    assert!(dir.path().join("file2.txt").exists());
+
+    // Preserved git default combined squash message
+    let msg_res = execute_git_command(&repo_path, &["log", "-1", "--format=%B", "HEAD"])
+        .await
+        .expect("git log message");
+    assert!(
+        msg_res.stdout.contains("feat: commit 1"),
+        "commit message should contain commit 1 details: {}",
+        msg_res.stdout
+    );
+}
+

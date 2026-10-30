@@ -102,21 +102,26 @@ fn handle_sequence_editor(source_path: Option<&Path>, target_path: &Path) -> Res
 }
 
 fn run(args: &[String]) -> Result<(), String> {
-    if args.len() >= 3 && args[1] == "--editor" {
+    if args.len() >= 4 && args[1] == "--editor" {
         let msg_file = Path::new(&args[2]);
-        let target = Path::new(args.last().unwrap());
+        let target = Path::new(&args[3]);
         return handle_editor(Some(msg_file), target);
     }
 
-    if args.len() >= 2 && args[1] == "--editor" {
-        let target = Path::new(args.last().unwrap());
+    if args.len() >= 3 && args[1] == "--editor" {
+        let target = Path::new(&args[2]);
         return handle_editor(None, target);
     }
 
-    if args.len() >= 3 && args[1] == "--todo" {
+    if args.len() >= 4 && args[1] == "--todo" {
         let src = Path::new(&args[2]);
-        let target = Path::new(args.last().unwrap());
+        let target = Path::new(&args[3]);
         return handle_sequence_editor(Some(src), target);
+    }
+
+    if args.len() >= 3 && args[1] == "--todo" {
+        let target = Path::new(&args[2]);
+        return handle_sequence_editor(None, target);
     }
 
     if args.len() >= 3 {
@@ -125,13 +130,17 @@ fn run(args: &[String]) -> Result<(), String> {
         return handle_sequence_editor(Some(src), target);
     }
 
-    let target = Path::new(&args[1]);
-    let target_str = target.to_string_lossy().to_lowercase();
-    if target_str.ends_with("commit_editmsg") {
-        handle_editor(None, target)
-    } else {
-        handle_sequence_editor(None, target)
+    if args.len() >= 2 {
+        let target = Path::new(&args[1]);
+        let target_str = target.to_string_lossy().to_lowercase();
+        if target_str.ends_with("commit_editmsg") {
+            return handle_editor(None, target);
+        } else {
+            return handle_sequence_editor(None, target);
+        }
     }
+
+    Err("Insufficient arguments provided".to_string())
 }
 
 fn main() {
